@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>早期療育 語言治療評估報告 — 互動表單</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#FAF7F1; --card:#FFFFFF; --primary:#1F6F78; --primary-dark:#154D53;
+    --accent:#E8935B; --text:#2B2B29; --text-muted:#767268; --border:#E7E1D5;
+    --danger:#C85C4A; --radius:14px; --shadow:0 2px 10px rgba(43,43,41,0.06);
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; font-family:"Noto Sans TC","Microsoft JhengHei",sans-serif; background:var(--bg); color:var(--text); line-height:1.6;}
+  #topbar{position:sticky; top:0; z-index:30; background:var(--card); border-bottom:1px solid var(--border); padding:14px 20px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;}
+  #topbar .title{font-weight:700; font-size:16px; color:var(--primary-dark);}
+  #topbar .sub{font-size:12px; color:var(--text-muted);}
+  #dev-banner{background:#FDECEC; color:#8A2C22; font-size:12.5px; text-align:center; padding:8px;}
+
+  #resume-banner{max-width:1040px; margin:16px auto 0; padding:0 16px;}
+  #resume-banner-inner{background:#FBF1E6; border:1px solid #EFD9B8; border-radius:12px; padding:14px 16px; display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:10px;}
+  #resume-banner-inner p{margin:0; font-size:13.5px; color:#7A5A2A; flex:1; min-width:200px;}
+  #resume-banner-actions{display:flex; gap:8px;}
+  .primary-sm{background:var(--primary); color:#fff; border:none; border-radius:8px; padding:8px 14px; font-size:13px; font-weight:600; cursor:pointer;}
+  .primary-sm:hover{background:var(--primary-dark);}
+  .secondary-sm{background:#fff; color:#7A5A2A; border:1px solid #EFD9B8; border-radius:8px; padding:8px 14px; font-size:13px; cursor:pointer;}
+  #autosave-indicator{position:fixed; bottom:20px; right:16px; background:var(--primary-dark); color:#fff; font-size:12px; padding:6px 12px; border-radius:999px; opacity:0; transform:translateY(6px); transition:.25s; pointer-events:none; z-index:40;}
+  #autosave-indicator.show{opacity:.92; transform:translateY(0);}
+
+  main{max-width:1040px; margin:0 auto; padding:20px 16px 80px; display:grid; grid-template-columns:1fr 1fr; gap:20px;}
+  @media (max-width:960px){ main{grid-template-columns:1fr;} }
+  .col{display:flex; flex-direction:column; gap:16px;}
+
+  .card{background:var(--card); border:1px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow); padding:20px;}
+  .card h2{font-size:16px; margin:0 0 4px; color:var(--primary-dark);}
+  .card .desc{font-size:12.5px; color:var(--text-muted); margin:0 0 14px;}
+
+  .field{margin-bottom:14px;}
+  .field:last-child{margin-bottom:0;}
+  .field label{font-weight:600; font-size:13.5px; display:block; margin-bottom:6px;}
+  input[type=text],input[type=number],input[type=date],select,textarea{
+    width:100%; padding:9px 11px; border:1px solid var(--border); border-radius:9px;
+    font-family:inherit; font-size:13.5px; background:#FFFDFB; color:var(--text);
+  }
+  textarea{resize:vertical; min-height:56px;}
+  input:focus,select:focus,textarea:focus{outline:2px solid var(--primary); outline-offset:1px; border-color:var(--primary);}
+  input:disabled{background:#F0EDE6 !important;}
+
+  .row-2{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+  .row-3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px;}
+  .row-4{display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:10px;}
+  @media (max-width:480px){ .row-2,.row-3,.row-4{grid-template-columns:1fr;} }
+
+  .choice-row{display:flex; flex-wrap:wrap; gap:7px;}
+  .choice-btn{border:1px solid var(--border); background:#FFFDFB; color:var(--text); border-radius:999px; padding:7px 14px; font-size:13px; cursor:pointer; transition:.12s;}
+  .choice-btn:hover{border-color:var(--primary);}
+  .choice-btn.selected{background:var(--primary); border-color:var(--primary); color:#fff; font-weight:600;}
+
+  .subsection-title{font-weight:700; font-size:13.5px; color:var(--primary-dark); margin:16px 0 8px;}
+  .subsection-title:first-child{margin-top:0;}
+
+  button.primary{background:var(--primary); color:#fff; border:none; border-radius:10px; padding:11px 20px; font-weight:600; font-size:14.5px; cursor:pointer;}
+  button.primary:hover{background:var(--primary-dark);}
+  button.secondary{background:#F0EDE6; color:var(--text); border:none; border-radius:10px; padding:9px 16px; font-size:13.5px; cursor:pointer;}
+  button.secondary:hover{background:#E7E1D5;}
+
+  #loadStatus{font-size:12.5px; color:var(--text-muted); margin-top:6px;}
+  #loadStatus.ok{color:var(--primary-dark);}
+  #loadStatus.err{color:var(--danger);}
+
+  .age-tool-badge{display:inline-block; margin-top:6px; background:var(--accent); color:#fff; font-size:12px; font-weight:700; padding:4px 10px; border-radius:999px;}
+
+  #previewCardFull table{width:100%; border-collapse:collapse; font-size:12px;}
+  #previewPane th{background:#EAF3F2; color:var(--primary-dark); padding:6px 8px; border:1px solid var(--border); text-align:left; font-size:12px;}
+  #previewPane td{border:1px solid var(--border); padding:6px 8px; vertical-align:top; white-space:pre-wrap;}
+  #previewPane td.cat{font-weight:700; background:#FCFAF6;}
+  #previewPane .p-title{text-align:center; font-weight:700; font-size:15px; margin-bottom:10px; color:var(--primary-dark);}
+
+  .export-bar{display:flex; gap:10px;}
+</style>
+</head>
+<body>
+
+<div id="dev-banner" style="display:none;">⚠ 尚未設定 API_URL，無法自動載入個案資料。請在檔案開頭的 API_URL 填入 Apps Script 網頁應用程式網址。</div>
+
+<div id="resume-banner" style="display:none;">
+  <div id="resume-banner-inner">
+    <p>偵測到您先前尚未完成的填寫紀錄（<span id="resume-time"></span>），要繼續填寫嗎？</p>
+    <div id="resume-banner-actions">
+      <button type="button" id="btn-resume-continue" class="primary-sm">繼續填寫</button>
+      <button type="button" id="btn-resume-restart" class="secondary-sm">重新開始</button>
+    </div>
+  </div>
+</div>
+<div id="autosave-indicator">已自動儲存</div>
+
+<div id="topbar">
+  <div>
+    <div class="title">早期療育 語言治療評估報告 — 互動表單</div>
+    <div class="sub">家長問卷資料自動帶入，專業評估區請治療師填寫</div>
+  </div>
+  <div class="export-bar">
+    <button class="secondary" onclick="resetAll()">清空重填</button>
+    <button class="primary" onclick="exportWord(event)">匯出 Word 報告</button>
+  </div>
+</div>
+
+<main>
+  <div class="col">
+
+    <div class="card">
+      <h2>選擇個案</h2>
+      <div class="desc">依評估日期挑選當天要看的個案，問卷已填寫的欄位會自動帶入下方</div>
+      <div class="row-2">
+        <div class="field"><label>評估日期</label><select id="dateSelect" onchange="onDateChange()"><option value="">請選擇日期</option></select></div>
+        <div class="field"><label>個案</label><select id="caseSelect" onchange="onCaseChange()"><option value="">請先選日期</option></select></div>
+      </div>
+      <div id="loadStatus"></div>
+    </div>
+
+    <div class="card">
+      <h2>基本資訊</h2>
+      <div class="row-2">
+        <div class="field"><label>個案姓名</label><input type="text" id="f_child_name" oninput="onFieldInput()"></div>
+        <div class="field"><label>評估日期</label><input type="text" id="f_eval_date" oninput="onFieldInput(); updateAgeAndTool();"></div>
+      </div>
+      <div class="row-2">
+        <div class="field"><label>個案出生日期</label><input type="text" id="f_child_dob" placeholder="yyyy-MM-dd" oninput="onFieldInput(); updateAgeAndTool();"></div>
+        <div class="field"><label>目前年齡（自動計算）</label><input type="text" id="f_ageDisplay" disabled></div>
+      </div>
+      <div class="field"><label>評估語言治療師</label><input type="text" id="f_therapist" oninput="onFieldInput()"></div>
+      <div class="field">
+        <span id="toolSuggestBadge" class="age-tool-badge" style="display:none;"></span>
+      </div>
+    </div>
+
+    <!-- ================= 吞嚥／口腔功能 ================= -->
+    <div class="card">
+      <h2>口腔動作</h2>
+      <div class="field"><label>整體結果</label><div class="choice-row" id="c_oralResult"></div></div>
+      <div class="field"><label>症狀（可複選）</label><div class="choice-row" id="c_oralSymptoms"></div></div>
+      <input type="text" id="f_oralSymptomOther" placeholder="其他說明" oninput="onFieldInput()" style="margin-bottom:12px;">
+      <div class="field"><label>口腔構造</label><input type="text" id="f_oralStructure" placeholder="無明顯異常" oninput="onFieldInput()"></div>
+      <div class="field"><label>口腔動作</label><textarea id="f_oralMotorNote" oninput="onFieldInput()"></textarea></div>
+      <div class="field"><label>流口水狀況</label><input type="text" id="f_droolingNote" oninput="onFieldInput()"></div>
+      <div class="field"><label>顎咽功能</label><input type="text" id="f_palateNote" oninput="onFieldInput()"></div>
+
+      <div class="subsection-title">口腔功能訓練</div>
+      <div class="field"><label>訓練需求</label><div class="choice-row" id="c_oralTrainingNeed"></div></div>
+      <div class="field"><label>訓練方向（可複選）</label><div class="choice-row" id="c_oralGoals"></div></div>
+    </div>
+
+    <div class="card">
+      <h2>吞嚥反射</h2>
+      <div class="field"><label>整體結果</label><div class="choice-row" id="c_swallowReflexResult"></div></div>
+      <div class="field"><label>目前進食方式</label><input type="text" id="f_feedingMethod" oninput="onFieldInput()"></div>
+      <div class="field"><label>目前進食食物材質</label><input type="text" id="f_feedingTexture" oninput="onFieldInput()"></div>
+      <div class="field"><label>咀嚼能力</label><input type="text" id="f_chewingNote" oninput="onFieldInput()"></div>
+      <div class="field"><label>吞嚥功能</label><input type="text" id="f_swallowFunctionNote" oninput="onFieldInput()"></div>
+    </div>
+
+    <div class="card">
+      <h2>吞嚥功能</h2>
+      <div class="field"><label>整體結果</label><div class="choice-row" id="c_swallowResult"></div></div>
+      <div class="field"><label>會嗆食</label><div class="choice-row" id="c_chokingItems"></div></div>
+      <div class="field"><label>主要食材</label><div class="choice-row" id="c_mainFoodTexture"></div></div>
+      <input type="text" id="f_mainFoodOther" placeholder="其他說明" oninput="onFieldInput()">
+
+      <div class="subsection-title">吞嚥訓練</div>
+      <div class="field"><label>訓練需求</label><div class="choice-row" id="c_swallowTrainingNeed"></div></div>
+      <div class="field"><label>訓練方向－基本（可複選）</label><div class="choice-row" id="c_swallowGoalsBasic"></div></div>
+      <input type="text" id="f_swallowControlAmount" placeholder="控制量說明" oninput="onFieldInput()" style="margin:8px 0;">
+      <div class="field"><label>食物材質的選擇（可複選）</label><div class="choice-row" id="c_swallowFoodTexture"></div></div>
+      <div class="field"><label>食器的選擇（可複選）</label><div class="choice-row" id="c_swallowUtensil"></div></div>
+      <div class="field"><label>具體建議</label><textarea id="f_swallowSuggestion" oninput="onFieldInput()"></textarea></div>
+    </div>
+
+  </div>
+
+  <div class="col">
+
+    <!-- ================= 口語理解 ================= -->
+    <div class="card">
+      <h2>口語理解</h2>
+      <div class="field"><label>整體結果</label><div class="choice-row" id="c_comprehensionResult"></div></div>
+      <div class="field"><label>評估工具（可複選）</label><div class="choice-row" id="c_comprehensionTools"></div></div>
+      <input type="text" id="f_comprehensionToolOther" placeholder="其他工具說明" oninput="onFieldInput()" style="margin-bottom:12px;">
+      <div class="subsection-title">評估結果（分數，待常模手冊建置自動查表前先手動填寫）</div>
+      <div class="row-2">
+        <div class="field"><label>對照常模（月齡）</label><input type="text" id="f_comprehensionNormAge" placeholder="如 24-26" oninput="onFieldInput()"></div>
+        <div class="field"><label>原始分數</label><input type="text" id="f_comprehensionRaw" oninput="onFieldInput()"></div>
+      </div>
+      <div class="row-3">
+        <div class="field"><label>百分等級</label><input type="text" id="f_comprehensionPR" oninput="onFieldInput()"></div>
+        <div class="field"><label>發展商數</label><input type="text" id="f_comprehensionDQ" oninput="onFieldInput()"></div>
+        <div class="field"><label>結果判定</label><div class="choice-row" id="c_comprehensionSeverity"></div></div>
+      </div>
+      <div class="field"><label>行為觀察及綜合結果</label><textarea id="f_comprehensionObservation" oninput="onFieldInput()"></textarea></div>
+      <div class="field"><label>語言理解（具體描述）</label><textarea id="f_comprehensionDetail" oninput="onFieldInput()"></textarea></div>
+
+      <div class="subsection-title">理解訓練</div>
+      <div class="field"><label>訓練需求</label><div class="choice-row" id="c_comprehensionTrainingNeed"></div></div>
+      <div class="field"><label>訓練方向（可複選）</label><div class="choice-row" id="c_comprehensionGoals"></div></div>
+    </div>
+
+    <!-- ================= 口語表達 ================= -->
+    <div class="card">
+      <h2>口語表達</h2>
+      <div class="field"><label>整體結果</label><div class="choice-row" id="c_expressionResult"></div></div>
+      <div class="field"><label>評估工具（可複選）</label><div class="choice-row" id="c_expressionTools"></div></div>
+      <input type="text" id="f_expressionToolOther" placeholder="其他工具說明" oninput="onFieldInput()" style="margin-bottom:12px;">
+      <div class="subsection-title">評估結果（分數）</div>
+      <div class="row-2">
+        <div class="field"><label>對照常模（月齡）</label><input type="text" id="f_expressionNormAge" placeholder="如 24-26" oninput="onFieldInput()"></div>
+        <div class="field"><label>原始分數</label><input type="text" id="f_expressionRaw" oninput="onFieldInput()"></div>
+      </div>
+      <div class="row-3">
+        <div class="field"><label>百分等級</label><input type="text" id="f_expressionPR" oninput="onFieldInput()"></div>
+        <div class="field"><label>發展商數</label><input type="text" id="f_expressionDQ" oninput="onFieldInput()"></div>
+        <div class="field"><label>結果判定</label><div class="choice-row" id="c_expressionSeverity"></div></div>
+      </div>
+      <div class="subsection-title">整體語言能力（理解+表達）</div>
+      <div class="row-3">
+        <div class="field"><label>原始分數</label><input type="text" id="f_overallRaw" oninput="onFieldInput()"></div>
+        <div class="field"><label>百分等級</label><input type="text" id="f_overallPR" oninput="onFieldInput()"></div>
+        <div class="field"><label>發展商數</label><input type="text" id="f_overallDQ" oninput="onFieldInput()"></div>
+      </div>
+      <div class="field"><label>整體結果判定</label><div class="choice-row" id="c_overallSeverity"></div></div>
+      <div class="field"><label>行為觀察及綜合結果</label><textarea id="f_expressionObservation" oninput="onFieldInput()"></textarea></div>
+
+      <div class="subsection-title">表達訓練</div>
+      <div class="field"><label>訓練需求</label><div class="choice-row" id="c_expressionTrainingNeed"></div></div>
+      <div class="field"><label>訓練方向（可複選）</label><div class="choice-row" id="c_expressionGoals"></div></div>
+      <div class="field"><label>建議療育</label><div class="choice-row" id="c_therapyRecommendation"></div></div>
+    </div>
+
+    <!-- ================= 語用能力 ================= -->
+    <div class="card">
+      <h2>語用能力</h2>
+      <div class="field"><label>整體結果</label><div class="choice-row" id="c_pragmaticsResult"></div></div>
+      <div class="field"><label>行為觀察及綜合結果</label><textarea id="f_pragmaticsObservation" oninput="onFieldInput()"></textarea></div>
+      <div class="subsection-title">語用訓練</div>
+      <div class="field"><label>訓練需求</label><div class="choice-row" id="c_pragmaticsTrainingNeed"></div></div>
+      <div class="field"><label>訓練方向（可複選）</label><div class="choice-row" id="c_pragmaticsGoals"></div></div>
+    </div>
+
+    <!-- ================= 說話 ================= -->
+    <div class="card">
+      <h2>說話</h2>
+      <div class="field"><label>整體結果</label><div class="choice-row" id="c_speechResult"></div></div>
+      <div class="field"><label>評估結果（可複選）</label><div class="choice-row" id="c_speechFindings"></div></div>
+      <input type="text" id="f_speechFindingOther" placeholder="其他說明" oninput="onFieldInput()" style="margin-bottom:12px;">
+      <div class="field"><label>評估工具（可複選）</label><div class="choice-row" id="c_speechTools"></div></div>
+      <input type="text" id="f_speechToolOther" placeholder="其他工具說明" oninput="onFieldInput()">
+
+      <div class="subsection-title">說話訓練</div>
+      <div class="field"><label>訓練需求</label><div class="choice-row" id="c_speechTrainingNeed"></div></div>
+      <div class="field"><label>訓練方向（可複選）</label><div class="choice-row" id="c_speechGoals"></div></div>
+      <div class="field"><label>具體建議</label><textarea id="f_speechSuggestion" oninput="onFieldInput()"></textarea></div>
+    </div>
+
+  </div>
+</main>
+
+<div style="max-width:1040px; margin:0 auto; padding:0 16px 80px;">
+  <div class="card" id="previewCardFull">
+    <h2>即時預覽</h2>
+    <div class="desc">與匯出的 Word 報告內容一致</div>
+    <div id="previewPane"></div>
+  </div>
+</div>
+
+<!-- docx 函式庫改在按下「匯出」時才載入 -->
+<script>
+const DOCX_CDN_CANDIDATES = [
+  "https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.min.js",
+  "https://unpkg.com/docx@8.5.0/build/index.umd.min.js",
+  "https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.js",
+  "https://unpkg.com/docx@8.5.0/build/index.umd.js"
+];
+function loadScriptTag_(src){
+  return new Promise((resolve, reject) => {
+    const s = document.createElement('script');
+    s.src = src;
+    s.onload = () => resolve();
+    s.onerror = () => reject(new Error("載入失敗：" + src));
+    document.head.appendChild(s);
+  });
+}
+async function ensureDocxLoaded(){
+  if(typeof docx !== "undefined") return true;
+  for(const url of DOCX_CDN_CANDIDATES){
+    try{ await loadScriptTag_(url); if(typeof docx !== "undefined") return true; }catch(e){}
+  }
+  return typeof docx !== "undefined";
+}
+</script>
+
+<script>
+/* =========================================================
+   設定
+   ========================================================= */
+const API_URL = "https://script.google.com/macros/s/AKfycbyNW6DVfgdteZ8tirAsRqOwXkX6Dxuulpvf8kI07BjR3c34XqI-g7dv7_JNTegnJCDbkg/exec";
+
+const state = {};
+
+/* =========================================================
+   選擇按鈕群組設定
+   ========================================================= */
+const EVAL_RESULT_TO_TRAINING_NEED = {
+  "無異常": "不需要", "正常": "不需要",
+  "臨界": "需要追蹤及諮詢", "邊緣": "需要追蹤及諮詢", "臨界發展遲緩": "需要追蹤及諮詢", "需要追蹤及諮詢": "需要追蹤及諮詢",
+  "異常": "需要訓練", "遲緩": "需要訓練", "發展遲緩": "需要訓練"
+};
+const RESULT_TO_TRAINING_KEY_MAP = {
+  oralResult: "oralTrainingNeed",
+  swallowResult: "swallowTrainingNeed",
+  comprehensionResult: "comprehensionTrainingNeed",
+  expressionResult: "expressionTrainingNeed",
+  pragmaticsResult: "pragmaticsTrainingNeed",
+  speechResult: "speechTrainingNeed"
+};
+
+const CHOICE_GROUPS = {
+  oralResult:{multi:false, options:["正常","臨界","異常","未進行此項評估"]},
+  oralSymptoms:{multi:true, options:["過度敏感","過度不敏感","動作不靈活","動作不協調","流口水","張力過低","張力過高","其他"]},
+  oralTrainingNeed:{multi:false, options:["不需要","需要追蹤及諮詢","需要訓練"]},
+  oralGoals:{multi:true, options:["口腔動作訓練","雙唇動作訓練","下頷動作訓練","舌頭動作訓練","咀嚼動作訓練","減敏感訓練","增敏感訓練","其他"]},
+
+  swallowReflexResult:{multi:false, options:["無異常","異常","未進行此項評估"]},
+
+  swallowResult:{multi:false, options:["無異常","臨界","異常","未進行此項評估"]},
+  chokingItems:{multi:true, options:["液體","半固體","固體"]},
+  mainFoodTexture:{multi:true, options:["流質","糊狀","軟質","固體","其他"]},
+  swallowTrainingNeed:{multi:false, options:["不需要","需要追蹤及諮詢","需要訓練"]},
+  swallowGoalsBasic:{multi:true, options:["改變姿勢","控制量"]},
+  swallowFoodTexture:{multi:true, options:["流質","糊狀","軟質","固體","其他"]},
+  swallowUtensil:{multi:true, options:["奶瓶","杯子","湯匙","筷子","其他"]},
+
+  comprehensionResult:{multi:false, options:["無異常","邊緣","遲緩","未進行此項評估"]},
+  comprehensionTools:{multi:true, options:["臨床觀察","臨床晤談","修訂畢保德圖畫詞彙測驗(PPVT-R)","修訂學前兒童語言障礙評量表(PLS)","修訂學齡兒童語言障礙評量表(LS)","學前兒童語言能力測驗","嬰幼兒綜合發展測驗(CDIIT)","零至三歲華語嬰幼兒溝通及語言診斷測驗(0-3CLST)","華語兒童理解與表達詞彙測驗(REVT)","學前幼兒與國小低年級兒童口語語法診斷測驗","華語嬰幼兒溝通發展量表(MCDI-T)","其他"]},
+  comprehensionSeverity:{multi:false, options:["正常","輕度遲緩","顯著遲緩"]},
+  comprehensionTrainingNeed:{multi:false, options:["不需要","需要追蹤及諮詢","需要訓練"]},
+  comprehensionGoals:{multi:true, options:["聽能訓練","鼓勵兒童注意（注視）到說話者說話","教導兒童了解手勢及肢體動作的意思(如：搖頭，表示不要)","明白口語指令但須與手勢結合","訓練不需肢體動作或手勢，就能明白單一口語指令(如：拿積木給我)","明白單純口語指令","了解二個或以上連續動作指令","加強日常生活環境事務之口語解說與介紹","指認一般日常生活熟悉物品或圖片","理解常見物品的功用(如椅子)","理解形容詞、感覺、表情等抽象詞彙","理解複雜句型","理解經歷過的事件內容","了解故事內容（能夠做簡單問題的回答）","其他"]},
+
+  expressionResult:{multi:false, options:["無異常","邊緣","遲緩","未進行此項評估"]},
+  expressionTools:{multi:true, options:["臨床觀察","臨床晤談","修訂學前兒童語言障礙評量表(PLS)","修訂學齡兒童語言障礙評量表(LS)","嬰幼兒綜合發展測驗(CDIIT)","零至三歲華語嬰幼兒溝通及語言診斷測驗(0-3CLST)","華語兒童理解與表達詞彙測驗(REVT)","華語嬰幼兒溝通發展量表(MCDI-T)","其他"]},
+  expressionSeverity:{multi:false, options:["正常","輕度遲緩","顯著遲緩"]},
+  overallSeverity:{multi:false, options:["正常","輕度遲緩","顯著遲緩"]},
+  expressionTrainingNeed:{multi:false, options:["不需要","需要追蹤及諮詢","需要訓練"]},
+  expressionGoals:{multi:true, options:["使用溝通輔具","鼓勵用簡單的手勢表達，如：吃、喝、拉、尿","鼓勵模仿發聲或模仿語音","以單字加上手勢動作表達","鼓勵說簡單詞彙，如：常見物品命名、功能詞彙（如：要、好、謝謝、尿尿）","增加單字、詞彙及短句的數量 (如：我要喝水、我要挖沙沙)","加強抽象詞彙的表達(如：好大的車子)","拉長語句長度","練習複雜句的敘述（如：因為…就…）","增加主動表達的意願和機會","其他"]},
+  therapyRecommendation:{multi:false, options:["建議於本院療育","建議轉介療育","維持目前療育"]},
+
+  pragmaticsResult:{multi:false, options:["無異常","臨界發展遲緩","發展遲緩","未進行此項評估"]},
+  pragmaticsTrainingNeed:{multi:false, options:["不需要","需要追蹤及諮詢","需要訓練"]},
+  pragmaticsGoals:{multi:true, options:["能夠適切地引起溝通對象注意","能夠主動的表達需求","能夠主動的問問題","交談時能適切的回應他人的問話","交談時能夠澄清或補充訊息","交談時能適切的轉換話題","建立對事物的廣泛興趣，勿過於侷限","維持合乎情境的對話主題","維持一來一往的對話輪替","能使用合乎情境的適當口語","能聽懂笑話、雙關語或詞彙非字面的意義","能適切的開啟及結束對話","增加語用預設的能力","其他"]},
+
+  speechResult:{multi:false, options:["無異常","異常","需要追蹤及諮詢","未進行此項評估"]},
+  speechFindings:{multi:true, options:["構音障礙","言語不流暢/口吃/迅吃","嗓音障礙","其他：構音/音韻仍在發展中"]},
+  speechTools:{multi:true, options:["臨床觀察","臨床晤談","國語正音檢核表","華語兒童構音與音韻測驗(APTMC)","修訂中文口吃嚴重度評估工具(兒童版)(SSI-3)","其他"]},
+  speechTrainingNeed:{multi:false, options:["不需要","需要追蹤及諮詢","需要訓練"]},
+  speechGoals:{multi:true, options:["構音矯正","嗓音復健","語暢訓練","建立良好的發聲模式及嗓音保健","其他"]}
+};
+
+function renderChoiceGroups(){
+  Object.keys(CHOICE_GROUPS).forEach(key=>{
+    const cfg = CHOICE_GROUPS[key];
+    const el = document.getElementById("c_"+key);
+    if(!el) return;
+    state[key] = state[key] !== undefined ? state[key] : (cfg.multi ? [] : "");
+    el.innerHTML = "";
+    cfg.options.forEach(opt=>{
+      const label = opt;
+      const btn = document.createElement("button");
+      btn.type = "button"; btn.className = "choice-btn"; btn.textContent = label;
+      btn.onclick = () => toggleChoice(key, label, cfg.multi);
+      el.appendChild(btn);
+    });
+  });
+  refreshChoiceButtonStates();
+}
+function toggleChoice(key, opt, multi){
+  if(multi){
+    const arr = state[key];
+    const idx = arr.indexOf(opt);
+    if(idx>=0) arr.splice(idx,1); else arr.push(opt);
+  } else {
+    state[key] = (state[key]===opt) ? "" : opt;
+  }
+  const trainingKey = RESULT_TO_TRAINING_KEY_MAP[key];
+  if(trainingKey && state[key] && EVAL_RESULT_TO_TRAINING_NEED[state[key]]){
+    state[trainingKey] = EVAL_RESULT_TO_TRAINING_NEED[state[key]];
+  }
+  refreshChoiceButtonStates();
+  updatePreview();
+}
+function refreshChoiceButtonStates(){
+  Object.keys(CHOICE_GROUPS).forEach(key=>{
+    const cfg = CHOICE_GROUPS[key];
+    const el = document.getElementById("c_"+key);
+    if(!el) return;
+    const val = state[key];
+    Array.from(el.children).forEach(btn=>{
+      const selected = cfg.multi ? val.includes(btn.textContent) : val===btn.textContent;
+      btn.classList.toggle("selected", selected);
+    });
+  });
+}
+
+/* =========================================================
+   一般文字欄位
+   ========================================================= */
+const TEXT_FIELDS = [
+  "child_name","eval_date","child_dob","therapist",
+  "oralSymptomOther","oralStructure","oralMotorNote","droolingNote","palateNote",
+  "feedingMethod","feedingTexture","chewingNote","swallowFunctionNote",
+  "mainFoodOther","swallowControlAmount","swallowSuggestion",
+  "comprehensionToolOther","comprehensionNormAge","comprehensionRaw","comprehensionPR","comprehensionDQ",
+  "comprehensionObservation","comprehensionDetail",
+  "expressionToolOther","expressionNormAge","expressionRaw","expressionPR","expressionDQ",
+  "overallRaw","overallPR","overallDQ","expressionObservation",
+  "pragmaticsObservation",
+  "speechFindingOther","speechToolOther","speechSuggestion"
+];
+
+function onFieldInput(){
+  TEXT_FIELDS.forEach(f=>{
+    const el = document.getElementById("f_"+f);
+    if(el) state[f] = el.value;
+  });
+  updatePreview();
+}
+function setTextFields(data){
+  TEXT_FIELDS.forEach(f=>{
+    const el = document.getElementById("f_"+f);
+    if(el && data[f]!==undefined){ el.value = data[f]; state[f]=data[f]; }
+  });
+}
+function g(f){ const el=document.getElementById("f_"+f); return (state[f]!==undefined?state[f]:(el?el.value:"")) || ""; }
+function cg(k){ const cfg=CHOICE_GROUPS[k]; if(!cfg) return ""; return cfg.multi ? (state[k]||[]).join("、") : (state[k]||""); }
+
+/* =========================================================
+   年齡計算 ＋ 建議評估工具（0-3 CDIIT／3-5 PLS／6+ LS）
+   ========================================================= */
+function parseDateFlexible(str){
+  if(!str) return null;
+  const cleaned = str.trim().replace(/\//g,"-");
+  const d = new Date(cleaned);
+  return isNaN(d.getTime()) ? null : d;
+}
+function computeAgeMonths(dobStr, refDateStr){
+  const dob = parseDateFlexible(dobStr);
+  const ref = parseDateFlexible(refDateStr) || new Date();
+  if(!dob) return null;
+  let months = (ref.getFullYear()-dob.getFullYear())*12 + (ref.getMonth()-dob.getMonth());
+  if(ref.getDate() < dob.getDate()) months -= 1;
+  return Math.max(months, 0);
+}
+function updateAgeAndTool(){
+  const ageMonths = computeAgeMonths(g("child_dob"), g("eval_date"));
+  const ageEl = document.getElementById("f_ageDisplay");
+  const badge = document.getElementById("toolSuggestBadge");
+  if(ageMonths===null){
+    ageEl.value = "";
+    badge.style.display = "none";
+    return;
+  }
+  const years = Math.floor(ageMonths/12);
+  const rem = ageMonths%12;
+  ageEl.value = `${years}歲${rem}個月（共${ageMonths}個月）`;
+
+  let suggestion;
+  if(ageMonths <= 35) suggestion = "建議使用 CDIIT（嬰幼兒綜合發展測驗語言分測驗，0-3歲）";
+  else if(ageMonths <= 71) suggestion = "建議使用 PLS（修訂學前兒童語言障礙量表，3-5歲）";
+  else suggestion = "建議使用 LS（修訂學齡兒童語言障礙量表，6歲以上）";
+  badge.textContent = "★ " + suggestion;
+  badge.style.display = "inline-block";
+}
+
+/* =========================================================
+   讀取個案清單 / 載入個案資料
+   ========================================================= */
+async function loadDates(){
+  if(API_URL.includes("PASTE_YOUR")){ document.getElementById("dev-banner").style.display="block"; return; }
+  try{
+    const res = await fetch(`${API_URL}?action=listDates`);
+    const dates = await res.json();
+    const sel = document.getElementById("dateSelect");
+    sel.innerHTML = '<option value="">請選擇日期</option>';
+    dates.forEach(d=>{
+      const opt = document.createElement("option");
+      opt.value = d.date; opt.textContent = `${d.date}（${d.count}位）`;
+      sel.appendChild(opt);
+    });
+  }catch(err){ setStatus("無法載入評估日期清單，請確認 API_URL 是否設定正確。","err"); }
+}
+async function onDateChange(){
+  const date = document.getElementById("dateSelect").value;
+  const caseSel = document.getElementById("caseSelect");
+  caseSel.innerHTML = '<option value="">載入中...</option>';
+  if(!date){ caseSel.innerHTML = '<option value="">請先選日期</option>'; return; }
+  try{
+    const res = await fetch(`${API_URL}?action=listCases&date=${encodeURIComponent(date)}`);
+    const cases = await res.json();
+    caseSel.innerHTML = '<option value="">請選擇個案</option>';
+    cases.forEach(c=>{
+      const opt = document.createElement("option");
+      opt.value = c.row; opt.textContent = c.name;
+      caseSel.appendChild(opt);
+    });
+  }catch(err){ setStatus("無法載入當天個案清單。","err"); }
+}
+async function onCaseChange(){
+  const row = document.getElementById("caseSelect").value;
+  if(!row) return;
+  setStatus("載入中...","");
+  try{
+    const res = await fetch(`${API_URL}?action=getCase&row=${row}`);
+    const data = await res.json();
+    if(!data){ setStatus("找不到這筆資料。","err"); return; }
+    applyCaseData(data);
+    setStatus("已載入問卷資料，請往下確認每個欄位。","ok");
+  }catch(err){ setStatus("載入失敗，請稍後再試。","err"); }
+}
+function setStatus(msg,cls){ const el=document.getElementById("loadStatus"); el.textContent=msg; el.className=cls||""; }
+
+function applyCaseData(v){
+  const computed = {
+    child_name: v["個案姓名"] || "",
+    eval_date: v["評估日期"] || "",
+    child_dob: v["出生日期"] || ""
+  };
+  setTextFields(computed);
+  updateAgeAndTool();
+  updatePreview();
+}
+
+/* =========================================================
+   報告內容組成
+   ========================================================= */
+function oralContent(){
+  let s = `整體結果：${cg("oralResult")||"　"}\n`;
+  const symptoms = cg("oralSymptoms");
+  s += `症狀：${symptoms||"　"}${g("oralSymptomOther")?"（"+g("oralSymptomOther")+"）":""}\n`;
+  s += `口腔構造：${g("oralStructure")||"無明顯異常"}\n`;
+  s += `口腔動作：${g("oralMotorNote")||"　"}\n`;
+  s += `流口水狀況：${g("droolingNote")||"　"}\n`;
+  s += `顎咽功能：${g("palateNote")||"　"}`;
+  return s;
+}
+function oralTrainingContent(){
+  return `訓練需求：${cg("oralTrainingNeed")||"　"}\n訓練方向：${cg("oralGoals")||"　"}`;
+}
+function swallowReflexContent(){
+  let s = `整體結果：${cg("swallowReflexResult")||"　"}\n`;
+  s += `目前進食方式：${g("feedingMethod")||"　"}\n`;
+  s += `目前進食食物材質：${g("feedingTexture")||"　"}\n`;
+  s += `咀嚼能力：${g("chewingNote")||"　"}\n`;
+  s += `吞嚥功能：${g("swallowFunctionNote")||"　"}`;
+  return s;
+}
+function swallowContent(){
+  let s = `整體結果：${cg("swallowResult")||"　"}\n`;
+  s += `會嗆食：${cg("chokingItems")||"　"}\n`;
+  s += `主要食材：${cg("mainFoodTexture")||"　"}${g("mainFoodOther")?"（"+g("mainFoodOther")+"）":""}`;
+  return s;
+}
+function swallowTrainingContent(){
+  let s = `訓練需求：${cg("swallowTrainingNeed")||"　"}\n`;
+  s += `訓練方向：${cg("swallowGoalsBasic")||"　"}${g("swallowControlAmount")?"（控制量："+g("swallowControlAmount")+"）":""}\n`;
+  s += `食物材質的選擇：${cg("swallowFoodTexture")||"　"}\n`;
+  s += `食器的選擇：${cg("swallowUtensil")||"　"}\n`;
+  s += `具體建議：${g("swallowSuggestion")||"　"}`;
+  return s;
+}
+function comprehensionContent(){
+  let s = `整體結果：${cg("comprehensionResult")||"　"}\n`;
+  s += `評估工具：${cg("comprehensionTools")||"　"}${g("comprehensionToolOther")?"（"+g("comprehensionToolOther")+"）":""}\n`;
+  if(g("comprehensionNormAge")||g("comprehensionRaw")){
+    s += `評估結果：對照${g("comprehensionNormAge")||"　"}個月常模，語言理解能力原始分數${g("comprehensionRaw")||"　"}，百分等級${g("comprehensionPR")||"　"}，發展商數${g("comprehensionDQ")||"　"}，${cg("comprehensionSeverity")||"　"}\n`;
+  }
+  s += `行為觀察及綜合結果：${g("comprehensionObservation")||"　"}\n`;
+  s += `語言理解：${g("comprehensionDetail")||"　"}`;
+  return s;
+}
+function comprehensionTrainingContent(){
+  return `訓練需求：${cg("comprehensionTrainingNeed")||"　"}\n訓練方向：${cg("comprehensionGoals")||"　"}`;
+}
+function expressionContent(){
+  let s = `整體結果：${cg("expressionResult")||"　"}\n`;
+  s += `評估工具：${cg("expressionTools")||"　"}${g("expressionToolOther")?"（"+g("expressionToolOther")+"）":""}\n`;
+  if(g("expressionNormAge")||g("expressionRaw")){
+    s += `評估結果：對照${g("expressionNormAge")||"　"}個月常模，口語表達能力原始分數${g("expressionRaw")||"　"}，百分等級${g("expressionPR")||"　"}，發展商數${g("expressionDQ")||"　"}，${cg("expressionSeverity")||"　"}\n`;
+  }
+  if(g("overallRaw")||g("overallPR")||g("overallDQ")){
+    s += `整體語言能力原始分數${g("overallRaw")||"　"}，百分等級${g("overallPR")||"　"}，發展商數${g("overallDQ")||"　"}，${cg("overallSeverity")||"　"}\n`;
+  }
+  s += `行為觀察及綜合結果：${g("expressionObservation")||"　"}`;
+  return s;
+}
+function expressionTrainingContent(){
+  return `訓練需求：${cg("expressionTrainingNeed")||"　"}\n訓練方向：${cg("expressionGoals")||"　"}\n建議療育：${cg("therapyRecommendation")||"　"}`;
+}
+function pragmaticsContent(){
+  return `整體結果：${cg("pragmaticsResult")||"　"}\n行為觀察及綜合結果：${g("pragmaticsObservation")||"　"}`;
+}
+function pragmaticsTrainingContent(){
+  return `訓練需求：${cg("pragmaticsTrainingNeed")||"　"}\n訓練方向：${cg("pragmaticsGoals")||"　"}`;
+}
+function speechContent(){
+  let s = `整體結果：${cg("speechResult")||"　"}\n`;
+  s += `評估結果：${cg("speechFindings")||"　"}${g("speechFindingOther")?"（"+g("speechFindingOther")+"）":""}\n`;
+  s += `評估工具：${cg("speechTools")||"　"}${g("speechToolOther")?"（"+g("speechToolOther")+"）":""}`;
+  return s;
+}
+function speechTrainingContent(){
+  return `訓練需求：${cg("speechTrainingNeed")||"　"}\n訓練方向：${cg("speechGoals")||"　"}\n具體建議：${g("speechSuggestion")||"　"}`;
+}
+
+function getReportRows(){
+  const rows = [];
+  rows.push(["吞嚥／口腔功能", `口腔動作　${cg("oralResult")||""}`, oralContent()]);
+  rows.push(["", "口腔功能訓練", oralTrainingContent()]);
+  rows.push(["", `吞嚥反射　${cg("swallowReflexResult")||""}`, swallowReflexContent()]);
+  rows.push(["", `吞嚥功能　${cg("swallowResult")||""}`, swallowContent()]);
+  rows.push(["", "吞嚥訓練", swallowTrainingContent()]);
+  rows.push(["口語溝通功能", `口語理解　${cg("comprehensionResult")||""}`, comprehensionContent()]);
+  rows.push(["", "理解訓練", comprehensionTrainingContent()]);
+  rows.push(["", `口語表達　${cg("expressionResult")||""}`, expressionContent()]);
+  rows.push(["", "表達訓練", expressionTrainingContent()]);
+  rows.push(["", `語用能力　${cg("pragmaticsResult")||""}`, pragmaticsContent()]);
+  rows.push(["", "語用訓練", pragmaticsTrainingContent()]);
+  rows.push(["", `說話　${cg("speechResult")||""}`, speechContent()]);
+  rows.push(["", "說話訓練", speechTrainingContent()]);
+  return rows;
+}
+
+function updatePreview(){
+  const rows = getReportRows();
+  const p = document.getElementById("previewPane");
+  let html = `<div class="p-title">ST 療育建議書</div>`;
+  html += `<div style="margin-bottom:8px; font-size:13px;">個案姓名：${g("child_name")||"　"}　評估日期：${g("eval_date")||"　"}　評估教師：${g("therapist")||"　"}</div>`;
+  html += `<table><tr><th style="width:90px;">類別</th><th style="width:110px;">評估/訓練項目</th><th>評估工具、結果與訓練方向</th></tr>`;
+  rows.forEach(r=>{
+    html += `<tr>${r[0]?`<td class="cat">${r[0]}</td>`:'<td></td>'}<td>${r[1]}</td><td>${r[2]}</td></tr>`;
+  });
+  html += `</table>`;
+  p.innerHTML = html;
+  saveStDraft();
+}
+
+/* =========================================================
+   匯出 Word（表格 + 標楷體，純瀏覽器端）
+   ========================================================= */
+async function exportWord(evt){
+  const btn = evt && evt.target;
+  if(btn){ btn.disabled=true; btn.textContent="載入中..."; }
+  const ok = await ensureDocxLoaded();
+  if(btn){ btn.disabled=false; btn.textContent="匯出 Word 報告"; }
+  if(!ok){
+    alert("Word 匯出功能載入失敗，請確認網路連線後重新整理頁面再試一次。若持續失敗，可能是院內網路封鎖了外部 CDN，請告知資訊室開放 cdn.jsdelivr.net 與 unpkg.com。");
+    return;
+  }
+  try{ await doExportWord_(); }
+  catch(err){ console.error(err); alert("匯出時發生問題："+err.message); }
+}
+
+async function doExportWord_(){
+  const { Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell, WidthType, BorderStyle, AlignmentType, VerticalAlign } = docx;
+  const FONT = { name: "DFKai-SB", hint: "eastAsia" };
+
+  const border = { style: BorderStyle.SINGLE, size: 2, color: "999999" };
+  const borders = { top:border, bottom:border, left:border, right:border };
+
+  function cell(text, width, opts={}){
+    const lines = String(text||"").split("\n").filter(l=>l.length>0);
+    const paragraphs = (lines.length ? lines : [""]).map(line =>
+      new Paragraph({ spacing:{after:60}, children:[new TextRun({text: line, font:FONT, size:22, bold:opts.bold||false})] })
+    );
+    return new TableCell({
+      borders, width:{size:width, type:WidthType.DXA}, verticalAlign: VerticalAlign.CENTER,
+      margins:{top:80,bottom:80,left:100,right:100}, children: paragraphs
+    });
+  }
+
+  const rows = getReportRows();
+  const tableRows = [
+    new TableRow({tableHeader:true, children:[
+      cell("類別", 1300, {bold:true}), cell("評估/訓練項目", 2000, {bold:true}), cell("評估工具、結果與訓練方向", 6200, {bold:true})
+    ]})
+  ];
+  rows.forEach(r=>{
+    tableRows.push(new TableRow({children:[ cell(r[0], 1300, {bold: !!r[0]}), cell(r[1], 2000), cell(r[2], 6200) ]}));
+  });
+
+  const doc = new Document({
+    styles:{ default:{ document:{ run:{ font:FONT, size:22 } } } },
+    sections:[{
+      children:[
+        new Paragraph({alignment:AlignmentType.CENTER, spacing:{after:200}, children:[new TextRun({text:"ST 療育建議書", bold:true, size:30, font:FONT})]}),
+        new Paragraph({spacing:{after:100}, children:[new TextRun({text:"個案姓名：", bold:true, font:FONT, size:22}), new TextRun({text:g("child_name")||"　", font:FONT, size:22})]}),
+        new Paragraph({spacing:{after:100}, children:[new TextRun({text:"評估日期：", bold:true, font:FONT, size:22}), new TextRun({text:g("eval_date")||"　", font:FONT, size:22})]}),
+        new Paragraph({spacing:{after:200}, children:[new TextRun({text:"評估教師：", bold:true, font:FONT, size:22}), new TextRun({text:g("therapist")||"　", font:FONT, size:22})]}),
+        new Table({ width:{size:9500, type:WidthType.DXA}, columnWidths:[1300,2000,6200], rows: tableRows })
+      ]
+    }]
+  });
+
+  const blob = await Packer.toBlob(doc);
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  const filename = `${g("child_name")||"個案"}_${g("eval_date")||"評估日期"}_語言治療評估報告草稿.docx`;
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  clearStDraft();
+}
+
+function resetAll(){
+  if(!confirm("確定要清空目前所有已填寫的內容嗎？")) return;
+  clearStDraft();
+  location.reload();
+}
+
+/* =========================================================
+   填寫進度暫存（localStorage），規則與 OT 版一致：
+   已填評估日期 → 評估日期+14天 為清除基準；
+   未填評估日期 → 3天無動作為備用清除基準
+   ========================================================= */
+const ST_DRAFT_KEY = 'st_interactive_draft_v1';
+const ST_DRAFT_EXPIRY_MS = 3 * 24 * 60 * 60 * 1000;
+const ST_DRAFT_EVAL_EXPIRY_DAYS = 14;
+let stDraftSaveTimer = null;
+
+function saveStDraftNow(){
+  try{
+    const payload = { savedAt: Date.now(), state: state };
+    localStorage.setItem(ST_DRAFT_KEY, JSON.stringify(payload));
+    flashStAutosaveIndicator();
+  }catch(e){}
+}
+function saveStDraft(){
+  clearTimeout(stDraftSaveTimer);
+  stDraftSaveTimer = setTimeout(saveStDraftNow, 500);
+}
+function clearStDraft(){
+  try{ localStorage.removeItem(ST_DRAFT_KEY); }catch(e){}
+}
+function flashStAutosaveIndicator(){
+  const el = document.getElementById('autosave-indicator');
+  el.classList.add('show');
+  clearTimeout(flashStAutosaveIndicator._t);
+  flashStAutosaveIndicator._t = setTimeout(()=>el.classList.remove('show'), 1400);
+}
+function formatStSavedTime(ts){
+  const d = new Date(ts);
+  const pad = n => String(n).padStart(2,'0');
+  return `${d.getFullYear()}/${pad(d.getMonth()+1)}/${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+function applyStDraft(draft){
+  Object.keys(draft.state).forEach(k=>{ state[k] = draft.state[k]; });
+  renderChoiceGroups();
+  TEXT_FIELDS.forEach(f=>{
+    const el = document.getElementById('f_'+f);
+    if(el && state[f]!==undefined) el.value = state[f];
+  });
+  updateAgeAndTool();
+  updatePreview();
+}
+function checkForStDraft(){
+  let raw;
+  try{ raw = localStorage.getItem(ST_DRAFT_KEY); }catch(e){ return; }
+  if(!raw) return;
+  let draft;
+  try{ draft = JSON.parse(raw); }catch(e){ clearStDraft(); return; }
+  if(!draft || !draft.savedAt){ clearStDraft(); return; }
+
+  const evalDateStr = draft.state && draft.state.eval_date;
+  const evalDate = evalDateStr ? parseDateFlexible(evalDateStr) : null;
+  if(evalDate){
+    const daysSinceEval = (Date.now() - evalDate.getTime()) / (24*60*60*1000);
+    if(daysSinceEval > ST_DRAFT_EVAL_EXPIRY_DAYS){ clearStDraft(); return; }
+  } else if(Date.now() - draft.savedAt > ST_DRAFT_EXPIRY_MS){
+    clearStDraft(); return;
+  }
+
+  document.getElementById('resume-time').textContent = formatStSavedTime(draft.savedAt);
+  document.getElementById('resume-banner').style.display = 'block';
+  document.getElementById('btn-resume-continue').onclick = ()=>{
+    applyStDraft(draft);
+    document.getElementById('resume-banner').style.display = 'none';
+  };
+  document.getElementById('btn-resume-restart').onclick = ()=>{
+    clearStDraft();
+    document.getElementById('resume-banner').style.display = 'none';
+  };
+}
+window.addEventListener('pagehide', ()=>{ clearTimeout(stDraftSaveTimer); saveStDraftNow(); });
+
+/* =========================================================
+   初始化
+   ========================================================= */
+renderChoiceGroups();
+updatePreview();
+loadDates();
+checkForStDraft();
+</script>
+</body>
+</html>
